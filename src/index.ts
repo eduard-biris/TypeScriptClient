@@ -12,7 +12,7 @@ type SupportedTypesEnum =
     'PiechartView'
 ;
 
-const mapCommitsToVisualizationsOfType = (type: SupportedTypesEnum, options?: any) => {
+const mapCommitsToVisualizationOfType = (type: SupportedTypesEnum, options?: any) => {
     const mappers = {
         'BarchartView': barChartMapper,
         'CalendarView': calendarMapper,
@@ -33,5 +33,5 @@ const mapCommitsToVisualizationsOfType = (type: SupportedTypesEnum, options?: an
 // mapCommitsToVisualizationsOfType('BarchartView', { type: 'line' });
 
 module.exports = {
-    mapCommitsToVisualizationsOfType,
+    mapCommitsToVisualizationOfType,
 };

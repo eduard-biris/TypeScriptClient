@@ -6,8 +6,7 @@ if(process.argv.length < 3) {
 
 let visualizationName = process.argv[2];
 
-const { mapCommitsToVisualizationsOfType } = require('./index');
-// TO DO: const axios = require('axios');
+const { mapCommitsToVisualizationOfType } = require('./index');
 
 const options = {};
 if(visualizationName === 'LinechartView') {
@@ -15,4 +14,17 @@ if(visualizationName === 'LinechartView') {
     options.type = 'line';
 }
 
-mapCommitsToVisualizationsOfType(visualizationName, options);
+const createVisualizationOfType = (type, options) => {
+    const axios = require('axios');
+
+    axios.post('http://localhost:8000/visualization', {
+        visualization: mapCommitsToVisualizationOfType(type, options),
+    })
+    .then((response) => {
+        console.log('Got axios response: ', response.data);
+    });
+};
+
+createVisualizationOfType(visualizationName, options);
+
+// mapCommitsToVisualizationOfType(visualizationName, options);
