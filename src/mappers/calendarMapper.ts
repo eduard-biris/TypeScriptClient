@@ -163,6 +163,7 @@ const mapCommitsToCalendarForUser = ({ email = 'ivan.kopeykin@gmail.com', option
     return {
         legend,
         options,
+        categories: ['Difficult day', 'Average day', 'Productive day'],
         calendar: mappedData,
     }
 };

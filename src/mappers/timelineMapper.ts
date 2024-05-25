@@ -137,7 +137,9 @@ const mapCommitsToTimeline = () => {
             events: commitsByDate[commitDate],
         };
     });
-    return timelineData;
+    return {
+        data: timelineData,
+    };
 };
 
 // mapCommitsToTimeline();

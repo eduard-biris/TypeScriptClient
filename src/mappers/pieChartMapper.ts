@@ -54,7 +54,9 @@ const mapCommitsToNumberOfCommitByUser = ({ legend = true, options = true, filte
 
     const result = countCommitsByUser(commits);
     return {
-        values: result,
+        data: {
+            values: result,
+        },
         legend,
         options,
         filter,
