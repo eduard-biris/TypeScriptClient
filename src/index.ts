@@ -24,9 +24,7 @@ const mapCommitsToVisualizationOfType = (type: SupportedTypesEnum, options?: any
         type,
         data: mappers[type](options ?? {}),
     };
-    
-    const util = require('util');
-    console.log('Result: ', util.inspect(result, false, 30));
+
     return result;
 };
 
