@@ -6,7 +6,7 @@ type MinimalComitsData = {
     message: string,
 };
 
-type MinimalHeartAttackData = {
+type MinimalHeartDiseaseData = {
     age: number,
     sex: string,
     chestPainType: string,
@@ -25,7 +25,7 @@ type Visualization = {
 
 export type {
     MinimalComitsData,
-    MinimalHeartAttackData,
+    MinimalHeartDiseaseData,
     NamedMap,
     Visualization,
 };

@@ -1,4 +1,4 @@
-import { MinimalComitsData, MinimalHeartAttackData, NamedMap } from "../types/types";
+import { MinimalComitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
 
 const condenseSmallestGroups = (entitiesMap: Map<string, number>): Map<string, number> => {
     const values = [...entitiesMap.entries()].sort((a, b) => a[1] - b[1]);
@@ -56,7 +56,7 @@ const clientFunction = () => {
 
     // const result = piechart.create(fetchMinimalCommitsData(400));
 
-    const piechart = new Piechart<MinimalHeartAttackData>((clinicalCase: MinimalHeartAttackData) => clinicalCase.sex);
+    const piechart = new Piechart<MinimalHeartDiseaseData>((clinicalCase: MinimalHeartDiseaseData) => clinicalCase.sex);
 
     const { fetchMinimalHeartDiseaseData } = require('../data/dataProvider');
 

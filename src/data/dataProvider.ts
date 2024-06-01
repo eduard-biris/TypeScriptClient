@@ -1,4 +1,4 @@
-import type { MinimalComitsData, MinimalHeartAttackData } from "../types/types";
+import type { MinimalComitsData, MinimalHeartDiseaseData } from "../types/types";
 
 const INPUT_FILE_PATH = './output/OneThousandCommits.json';
 
@@ -27,7 +27,7 @@ const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalComitsData[] => 
     } as MinimalComitsData));
 };
 
-const fetchMinimalHeartDiseaseData = (numberOfPatients = 100, filterByOutcome = false, hadHeartDisease = 1): MinimalHeartAttackData[] => {
+const fetchMinimalHeartDiseaseData = (numberOfPatients = 100, filterByOutcome = false, hadHeartDisease = 1): MinimalHeartDiseaseData[] => {
     let cases = readDataFromfile('./output/heart_dataset.json').slice(0, numberOfPatients);
     
     console.log('Params: ', numberOfPatients, filterByOutcome, hadHeartDisease);
