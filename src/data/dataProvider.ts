@@ -1,26 +1,22 @@
-import type { MinimalComitsData } from "../types/types";
+import type { MinimalComitsData, MinimalHeartAttackData } from "../types/types";
 
 const INPUT_FILE_PATH = './output/OneThousandCommits.json';
 
-let commitsFromFile: any[];
-
-const readCommitsFromFile = (filePath = INPUT_FILE_PATH, clearCache = false) => {
-    if(!clearCache && commitsFromFile) return commitsFromFile;
-
+const readDataFromfile = (filePath = INPUT_FILE_PATH, clearCache = false) => {
     const fs = require('fs');
 
-    const commitsAsJson = fs.readFileSync(require.resolve(filePath), {
+    const dataAsJson = fs.readFileSync(require.resolve(filePath), {
         encoding: 'utf-8',
         flag: 'r'
     });
 
-    commitsFromFile = JSON.parse(commitsAsJson).flat();
+    const data = JSON.parse(dataAsJson).flat();
 
-    return commitsFromFile;
+    return data;
 };
 
 const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalComitsData[] => {
-    const commits = readCommitsFromFile().slice(0, numberOfCommits);
+    const commits = readDataFromfile().slice(0, numberOfCommits);
 
     return commits.map((commitData) => ({
         committerName: commitData.commit.committer.name,
@@ -31,6 +27,29 @@ const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalComitsData[] => 
     } as MinimalComitsData));
 };
 
+const fetchMinimalHeartDiseaseData = (numberOfPatients = 100, filterByOutcome = false, hadHeartDisease = 1): MinimalHeartAttackData[] => {
+    let cases = readDataFromfile('./output/heart_dataset.json').slice(0, numberOfPatients);
+    
+    console.log('Params: ', numberOfPatients, filterByOutcome, hadHeartDisease);
+
+    if(filterByOutcome) {
+        cases = cases.filter(c => c.target == hadHeartDisease);
+    }
+    
+    const result = cases.map((caseData) => ({
+        age: caseData.age,
+        sex: caseData.sex ? 'Male': 'Female',
+        chestPainType: caseData.cp,
+        cholesterol: caseData.chol,
+        highFastingBloodSugar: caseData.fbs,
+    }));
+
+    // console.log('Fetched cases: ', result);
+
+    return result;
+};
+
 module.exports = {
     fetchMinimalCommitsData,
+    fetchMinimalHeartDiseaseData,
 };

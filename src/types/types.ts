@@ -6,6 +6,14 @@ type MinimalComitsData = {
     message: string,
 };
 
+type MinimalHeartAttackData = {
+    age: number,
+    sex: string,
+    chestPainType: string,
+    cholesterol: number,
+    fastingBloodSugar: number,
+};
+
 type NamedMap<T> = {
     [key: string]: T;
 };
@@ -17,6 +25,7 @@ type Visualization = {
 
 export type {
     MinimalComitsData,
+    MinimalHeartAttackData,
     NamedMap,
     Visualization,
 };
