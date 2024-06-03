@@ -1,10 +1,10 @@
 import { MinimalComitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
 
-const condenseSmallestGroups = (entitiesMap: Map<string, number>): Map<string, number> => {
+const condenseSmallestGroups = (entitiesMap: Map<string, number>, maxGroupsNumber): Map<string, number> => {
     const values = [...entitiesMap.entries()].sort((a, b) => a[1] - b[1]);
 
     let othersCount = 0;
-    while(values.length > 6) {
+    while(values.length >= maxGroupsNumber) {
         othersCount += values.shift()[1];
     }
 
@@ -12,28 +12,35 @@ const condenseSmallestGroups = (entitiesMap: Map<string, number>): Map<string, n
     return new Map(values);
 };
 
+type PiechartConfiguration = {
+    maxNumberOfGroups?: number,
+};
+
 class Piechart<T> {
     extractGroupByField: (it: T) => string;
+    configuration: PiechartConfiguration;
 
-    constructor(extractGroupByField: (it: T) => string) {
+    constructor(extractGroupByField: (it: T) => string, configuration: PiechartConfiguration = {} ) {
         this.extractGroupByField = extractGroupByField;
+        this.configuration = configuration;
     }
 
     create(inputEntities: T[]) {
         let entitiesMap = new Map<string, number>();
 
         inputEntities.forEach((entity) => {
-            const fieldName = this.extractGroupByField(entity);
+            const key = this.extractGroupByField(entity);
 
-            if(entitiesMap.has(fieldName)) {
-                entitiesMap.set(fieldName, entitiesMap.get(fieldName) + 1);
+            if(entitiesMap.has(key)) {
+                entitiesMap.set(key, entitiesMap.get(key) + 1);
             } else {
-                entitiesMap.set(fieldName, 1);
+                entitiesMap.set(key, 1);
             }
         });
 
-        if(entitiesMap.size > 7) {
-            entitiesMap = condenseSmallestGroups(entitiesMap);
+        const maximumAllowedGroups = this.configuration?.maxNumberOfGroups;
+        if(maximumAllowedGroups && entitiesMap.size > maximumAllowedGroups) {
+            entitiesMap = condenseSmallestGroups(entitiesMap, maximumAllowedGroups);
         }
 
         const result: NamedMap<number> = {};
@@ -56,7 +63,24 @@ const clientFunction = () => {
 
     // const result = piechart.create(fetchMinimalCommitsData(400));
 
-    const piechart = new Piechart<MinimalHeartDiseaseData>((clinicalCase: MinimalHeartDiseaseData) => clinicalCase.sex);
+    const piechart = new Piechart<MinimalHeartDiseaseData>(
+        (clinicalCase: MinimalHeartDiseaseData) => {
+            if(clinicalCase.age < 35) {
+                return 'Aged under 35';
+            } else if(clinicalCase.age <= 45) {
+                return 'Aged 35 - 45';
+            } else if(clinicalCase.age < 55) {
+                return 'Aged 46 - 55';
+            } else if(clinicalCase.age < 65) {
+                return 'Aged 56 - 65';
+            }
+
+            return 'Aged above 65';
+        },
+        {
+            maxNumberOfGroups: 3
+        }
+    );
 
     const { fetchMinimalHeartDiseaseData } = require('../data/dataProvider');
 
@@ -68,39 +92,3 @@ const clientFunction = () => {
 };
 
 clientFunction();
-
-// // The code below is the example
-// class PieChart<T> {
-//     // let grouper null;
-
-//     // constructor ( grouper: (it: T) => string) {
-//     //     grouper = grouper;
-//     // }
-
-//     create(objects: T[]) {
-//         let objectsMap = new Map<string, number>();
-
-//         objects.forEach((obj) => {
-//             if(objectsMap.has(grouper(obj))) {
-//                 objectsMap.set(obj.committerName, objectsMap.get(obj.committerName) + 1);
-//             } else {
-//                 objectsMap.set(obj.committerName, 1);
-//             }
-//         });
-    
-//         if(objectsMap.size > 7) {
-//             objectsMap = condenseSmallestGroups(objectsMap);
-//         }
-    
-//         const result: NamedMap<number> = {};
-//         objectsMap.forEach((value, key) => {
-//             result[key] = value;
-//         });
-    
-//         return result;
-//     }
-// }
-
-// function client() {
-//     myPiechart = new PieChart<MinimalComitsData>(it => it.committerName);
-// }

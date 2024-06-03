@@ -1,28 +1,32 @@
 import { MinimalComitsData } from "../types/types";
 
-interface TimelineConstructorParams<T> {
-    extractDateField: (it: T) => string,
-    extractSummary: (it: T) => string,
-    extractTime: (it: T) => string,
-    extractAuthorField: (it: T) => string,
-    extractTypeField: (it: T) => string,
+type TimelineEventTag = {
+    name: string;
+}
+
+type TimelineEvent = {
+    summary: string;
+    date: string;
+    type: string;
+    author: string;
+    tags?: TimelineEventTag[];
+    description?: string;
+}
+
+type TimelineConstructorParams<T> = {
+    extractDate: (it: T) => string,
+    extractEvent: (it: T) => TimelineEvent,
     extractTimelineSummary: (itGroup: any, groupName: string) => string
 }
 
 class Timeline<T> {
-    extractDateField: (it: T) => string;
-    extractSumary: (it: T) => string;
-    extractTime: (it: T) => string;
-    extractAuthorField: (it: T) => string;
-    extractTypeField: (it: T) => string;
+    extractDate: (it: T) => string;
+    extractEvent: (it: T) => TimelineEvent;
     extractTimelineSummary: (itGroup: any, groupName: string) => string
 
     constructor(params: TimelineConstructorParams<T>) {
-        this.extractDateField = params.extractDateField;
-        this.extractSumary = params.extractSummary;
-        this.extractTime = params.extractTime;
-        this.extractAuthorField = params.extractAuthorField;
-        this.extractTypeField = params.extractTypeField;
+        this.extractDate = params.extractDate;
+        this.extractEvent = params.extractEvent;
         this.extractTimelineSummary = params.extractTimelineSummary;
     }
 
@@ -30,18 +34,13 @@ class Timeline<T> {
         const groupedEntities = {};
 
         entities.forEach((entity) => {
-            const desiredInfo = {
-                summary: this.extractSumary(entity),
-                date: this.extractTime(entity),
-                author: this.extractAuthorField(entity),
-                type: this.extractTypeField(entity),
-            };
-    
-            const dateField = this.extractDateField(entity);
-            if(!groupedEntities[dateField]) {
-                groupedEntities[dateField] = [desiredInfo];
+            const event = this.extractEvent(entity);
+            const date = this.extractDate(entity);
+
+            if(!groupedEntities[date]) {
+                groupedEntities[date] = [event];
             } else {
-                groupedEntities[dateField].push(desiredInfo);
+                groupedEntities[date].push(event);
             }
         });
     
@@ -71,12 +70,15 @@ const clientFunction = () => {
     const commits = fetchMinimalCommitsData(100);
 
     const timeline = new Timeline<MinimalComitsData>({
-        extractDateField: (it: MinimalComitsData) => it.date,
-        extractSummary: (it: MinimalComitsData) => `${it.committerName}: ${it.message}`,
-        extractTime: (it: MinimalComitsData) => it.time,
-        extractAuthorField: (it: MinimalComitsData) => it.committerEmail,
-        extractTypeField: (it: MinimalComitsData) => it.committerName,
-        extractTimelineSummary: (itGroup, groupName) => `${itGroup[groupName].length} commits on ${groupName}`,
+        extractDate: (commit: MinimalComitsData) => commit.date,
+        extractEvent: (commit: MinimalComitsData) => ({
+            summary: `${commit.committerName} made changes at ${commit.time}`,
+            date: commit.time,
+            type: commit.committerName,
+            author: commit.committerEmail,
+            description: commit.message,
+        }),
+        extractTimelineSummary: (commitsByDate, date) => `${commitsByDate[date].length} commits on ${date}`,
     });
 
     const result = timeline.create(commits);
