@@ -60,9 +60,7 @@ class Timeline<T> {
     }
 }
 
-module.exports = {
-    Timeline,
-}
+
 
 const clientFunction = () => {
     const { fetchMinimalCommitsData } = require('../data/dataProvider');
@@ -72,20 +70,24 @@ const clientFunction = () => {
     const timeline = new Timeline<MinimalComitsData>({
         extractDate: (commit: MinimalComitsData) => commit.date,
         extractEvent: (commit: MinimalComitsData) => ({
-            summary: `${commit.committerName} made changes at ${commit.time}`,
+            summary: commit.message,
             date: commit.time,
             type: commit.committerName,
             author: commit.committerEmail,
-            description: commit.message,
         }),
         extractTimelineSummary: (commitsByDate, date) => `${commitsByDate[date].length} commits on ${date}`,
     });
 
     const result = timeline.create(commits);
 
-    const util = require('util');
-    console.log('Result from timeline: ', util.inspect(result, false, 30));
+    // const util = require('util');
+    // console.log('Result from timeline: ', util.inspect(result, false, 30));
     return result;
 };
 
-clientFunction();
+// clientFunction();
+
+module.exports = {
+    Timeline,
+    clientFunction,
+}

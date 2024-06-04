@@ -15,7 +15,7 @@ class Axischart<T> {
     constructor(
         labelGenerator: (it: T) => string,
         axisGenerator: (it: T) => string,
-        configuration: AxischartConfiguration = { legend: true, options: true }
+        configuration: AxischartConfiguration = { }
     ) {
         this.labelGenerator = labelGenerator;
         this.axisGenerator = axisGenerator;
@@ -79,16 +79,22 @@ class Axischart<T> {
                 resultWithReducedXAxisEntries[key] = result[key];
             });
         
-            return this.mapDataToChartInputType(resultWithReducedXAxisEntries);
+            return {
+                data: this.mapDataToChartInputType(resultWithReducedXAxisEntries),
+                legend: this.configuration?.legend ?? true,
+                options: this.configuration?.options ?? true,
+                type: this.configuration?.type ?? 'bar'
+            }
         }
 
-        return this.mapDataToChartInputType(result);
+        return {
+            data: this.mapDataToChartInputType(result),
+            legend: this.configuration?.legend ?? true,
+            options: this.configuration?.options ?? true,
+            type: this.configuration?.type ?? 'bar'
+        }
     }
 }
-
-module.exports = {
-    Axischart,
-};
 
 const medicalAxischartClient = () => {
     const { fetchMinimalHeartDiseaseData } = require('../data/dataProvider');
@@ -134,7 +140,12 @@ const medicalAxischartClient = () => {
     return result;
 }
 
-medicalAxischartClient();
+// medicalAxischartClient();
+
+module.exports = {
+    Axischart,
+    medicalAxischartClient,
+};
 
 // const barchartClient = () => {
 //     const { fetchMinimalCommitsData } = require('../data/dataProvider');

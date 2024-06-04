@@ -14,13 +14,17 @@ const condenseSmallestGroups = (entitiesMap: Map<string, number>, maxGroupsNumbe
 
 type PiechartConfiguration = {
     maxNumberOfGroups?: number,
+    options?: boolean,
+    legend?: boolean,
+    filter?: boolean,
 };
 
 class Piechart<T> {
     extractGroupByField: (it: T) => string;
     configuration: PiechartConfiguration;
 
-    constructor(extractGroupByField: (it: T) => string, configuration: PiechartConfiguration = {} ) {
+    constructor(
+        extractGroupByField: (it: T) => string, configuration: PiechartConfiguration = {} ) {
         this.extractGroupByField = extractGroupByField;
         this.configuration = configuration;
     }
@@ -48,13 +52,16 @@ class Piechart<T> {
             result[key] = value;
         });
     
-        return result;
+        return {
+            data: {
+                values: result,
+            },
+            options: this.configuration?.options ?? true,
+            legend: this.configuration?.legend ?? true,
+            filter:this.configuration?.filter ?? true
+        };
     }
 }
-
-module.exports = {
-    Piechart,
-};
 
 const clientFunction = () => {
     // const piechart = new Piechart<MinimalComitsData>((commit: MinimalComitsData) => commit.committerName);
@@ -91,4 +98,9 @@ const clientFunction = () => {
     return result;
 };
 
-clientFunction();
+// clientFunction();
+
+module.exports = {
+    Piechart,
+    clientFunction,
+};
