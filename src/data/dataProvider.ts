@@ -1,4 +1,4 @@
-import type { MinimalComitsData, MinimalHeartDiseaseData } from "../types/types";
+import type { MinimalCommitsData, MinimalHeartDiseaseData } from "../types/types";
 
 const INPUT_FILE_PATH = './output/OneThousandCommits.json';
 
@@ -15,7 +15,7 @@ const readDataFromfile = (filePath = INPUT_FILE_PATH, clearCache = false) => {
     return data;
 };
 
-const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalComitsData[] => {
+const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalCommitsData[] => {
     const commits = readDataFromfile().slice(0, numberOfCommits);
 
     return commits.map((commitData) => ({
@@ -24,7 +24,7 @@ const fetchMinimalCommitsData = (numberOfCommits = 100): MinimalComitsData[] => 
         date: commitData.commit.committer.date.slice(0, 10),
         time: commitData.commit.committer.date.slice(11, 19),
         message: commitData.commit.message,
-    } as MinimalComitsData));
+    } as MinimalCommitsData));
 };
 
 const fetchMinimalHeartDiseaseData = (numberOfPatients = 100, filterByOutcome = false, hadHeartDisease = 1): MinimalHeartDiseaseData[] => {

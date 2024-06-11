@@ -1,4 +1,4 @@
-import { MinimalComitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
+import { MinimalCommitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
 
 const condenseSmallestGroups = (entitiesMap: Map<string, number>, maxGroupsNumber): Map<string, number> => {
     const values = [...entitiesMap.entries()].sort((a, b) => a[1] - b[1]);
@@ -64,11 +64,14 @@ class Piechart<T> {
 }
 
 const clientFunction = () => {
-    // const piechart = new Piechart<MinimalComitsData>((commit: MinimalComitsData) => commit.committerName);
 
-    // const { fetchMinimalCommitsData } = require('../data/dataProvider');
+    // const piechart = new Piechart<MinimalCommitsData>(
+    //     (commit: MinimalCommitsData) => commit.committerName,
+    //     {
+    //         maxNumberOfGroups: 5,
+    //     },
+    // );
 
-    // const result = piechart.create(fetchMinimalCommitsData(400));
 
     const piechart = new Piechart<MinimalHeartDiseaseData>(
         (clinicalCase: MinimalHeartDiseaseData) => {
@@ -83,22 +86,29 @@ const clientFunction = () => {
             }
 
             return 'Aged above 65';
-        },
-        {
-            maxNumberOfGroups: 3
         }
     );
 
     const { fetchMinimalHeartDiseaseData } = require('../data/dataProvider');
 
-    const result = piechart.create(fetchMinimalHeartDiseaseData(400, true, 0))
+    const result = piechart.create(fetchMinimalHeartDiseaseData(400, true, 0));
 
-    console.log('client function result: ', result);
+
+    // const { fetchMinimalCommitsData } = require('../data/dataProvider');
+
+    // const piechart = new Piechart<MinimalCommitsData>(
+    //     (commit: MinimalCommitsData) => commit.committerName,
+    //     { maxNumberOfGroups: 5 }
+    // );
+
+    // const result = piechart.create(fetchMinimalCommitsData(400))
+
+    console.log('client function result: \n', result);
 
     return result;
 };
 
-// clientFunction();
+clientFunction();
 
 module.exports = {
     Piechart,

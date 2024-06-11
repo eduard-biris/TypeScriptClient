@@ -11,7 +11,7 @@
 // const options = true;
 // const filter = true;
 
-import { MinimalComitsData, NamedMap } from "../types/types";
+import { MinimalCommitsData, NamedMap } from "../types/types";
 
 const condenseSmallestGroups = (commitsMap: Map<string, number>): Map<string, number> => {
     const values = [...commitsMap.entries()].sort((a, b) => a[1] - b[1]);
@@ -25,7 +25,7 @@ const condenseSmallestGroups = (commitsMap: Map<string, number>): Map<string, nu
     return new Map(values);
 };
 
-const countCommitsByUser = (commits: MinimalComitsData[]) => {
+const countCommitsByUser = (commits: MinimalCommitsData[]) => {
     let commitsMap = new Map<string, number>();
 
     commits.forEach((commit) => {
@@ -50,7 +50,7 @@ const countCommitsByUser = (commits: MinimalComitsData[]) => {
 
 const mapCommitsToNumberOfCommitByUser = ({ legend = true, options = true, filter = true }) => {
     const { fetchMinimalCommitsData } = require('../data/dataProvider');
-    const commits: MinimalComitsData[] = fetchMinimalCommitsData(1000);
+    const commits: MinimalCommitsData[] = fetchMinimalCommitsData(1000);
 
     const result = countCommitsByUser(commits);
     return {

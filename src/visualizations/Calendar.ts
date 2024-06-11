@@ -1,4 +1,4 @@
-import { MinimalComitsData, MinimalHeartDiseaseData } from "../types/types";
+import { MinimalCommitsData, MinimalHeartDiseaseData } from "../types/types";
 
 class Calendar<T> {
     extractDateField: (it: T) => string;
@@ -54,8 +54,9 @@ const commitsClientFunction = () => {
     const { fetchMinimalCommitsData } = require('../data/dataProvider');
 
     const email = 'ivan.kopeykin@gmail.com';
-    const commits: MinimalComitsData[] = fetchMinimalCommitsData()
-        .filter((commit: MinimalComitsData) => commit.committerEmail === email);
+    
+    const commits: MinimalCommitsData[] = fetchMinimalCommitsData()
+        .filter((commit: MinimalCommitsData) => commit.committerEmail === email);
 
     const determineCategory = (numberOfCommits: number): string => {
         if(numberOfCommits === 1) {
@@ -67,15 +68,15 @@ const commitsClientFunction = () => {
         }
     }
 
-    const calendar = new Calendar<MinimalComitsData>(
-        (commit: MinimalComitsData) => commit.date,
+    const calendar = new Calendar<MinimalCommitsData>(
+        (commit: MinimalCommitsData) => commit.date,
         ['Difficult Day', 'Average Day', 'Productive Day'],
         determineCategory,
     )
 
     const result = calendar.create(commits);
 
-    console.log('Calendar created result: ', result);
+    console.log('Calendar created result: \n', result);
 
     return result;
 };

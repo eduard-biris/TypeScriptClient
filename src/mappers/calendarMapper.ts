@@ -122,13 +122,13 @@
 
 // MapCommitsToCalendarForAUser();
 
-import type { MinimalComitsData } from "../types/types";
+import type { MinimalCommitsData } from "../types/types";
 
 const mapCommitsToCalendarForUser = ({ email = 'ivan.kopeykin@gmail.com', options = true, legend = true }) => {
     const { fetchMinimalCommitsData } = require('../data/dataProvider');
 
-    const commits: MinimalComitsData[] = fetchMinimalCommitsData()
-        .filter((commit: MinimalComitsData) => commit.committerEmail === email);
+    const commits: MinimalCommitsData[] = fetchMinimalCommitsData()
+        .filter((commit: MinimalCommitsData) => commit.committerEmail === email);
 
     const datesMap = new Map<string, number>();
 

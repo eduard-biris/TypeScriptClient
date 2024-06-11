@@ -1,4 +1,4 @@
-type MinimalComitsData = {
+type MinimalCommitsData = {
     committerName: string,
     committerEmail: string,
     date: string,
@@ -24,7 +24,7 @@ type Visualization = {
 };
 
 export type {
-    MinimalComitsData,
+    MinimalCommitsData,
     MinimalHeartDiseaseData,
     NamedMap,
     Visualization,

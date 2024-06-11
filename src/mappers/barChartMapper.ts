@@ -49,9 +49,9 @@
 //     }
 //   };
 
-import type { MinimalComitsData, NamedMap } from '../types/types';
+import type { MinimalCommitsData, NamedMap } from '../types/types';
 
-const groupNumberOfCommitsByDate = (commits: MinimalComitsData[]) => {
+const groupNumberOfCommitsByDate = (commits: MinimalCommitsData[]) => {
     const result: NamedMap<NamedMap<number>> = {};
 
     commits.forEach((commit) => {
@@ -109,7 +109,7 @@ const mapDataToChartInputType = (commitsData: NamedMap<NamedMap<number>>) => {
 const mapCommitsToNumberByUserByDate = ({ legend = true, options = true, type = 'bar' }) => {
     const { fetchMinimalCommitsData } = require('../data/dataProvider');
 
-    const commits: MinimalComitsData[] = fetchMinimalCommitsData();
+    const commits: MinimalCommitsData[] = fetchMinimalCommitsData();
     const numberOfCommitsByDate = groupNumberOfCommitsByDate(commits);
 
     const result = mapDataToChartInputType(numberOfCommitsByDate);

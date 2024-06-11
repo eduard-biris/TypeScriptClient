@@ -1,11 +1,45 @@
-import { MinimalComitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
+import { MinimalCommitsData, MinimalHeartDiseaseData, NamedMap } from "../types/types";
 
 type AxischartConfiguration = {
     legend?: boolean,
     options?: boolean,
     type?: 'line' | 'bar',
     maxNumberOfEntries?: number,
+    labelSorter?: (l1: string, l2: string) => number,
 };
+
+const mapDataToChartInputType = (data: NamedMap<NamedMap<number>>, labelSorter: (l1: string, l2: string) => number = () => 0) => {
+    let result: NamedMap<number[]> = {};
+    let yAxisEntries = new Set<string>();
+
+    const sortedLabels = Object.keys(data).sort(labelSorter);
+    console.log('Sorted labels: ', sortedLabels);
+
+    for(const xAxisEntry of sortedLabels) {
+        for(let yAxisEntry in data[xAxisEntry]) {
+            yAxisEntries.add(yAxisEntry);
+
+            if(!result[yAxisEntry]) {
+                result[yAxisEntry] = [];
+            }
+        }
+    }
+
+    for(const xAxisEntry of sortedLabels) {
+        for(let yAxisEntry of yAxisEntries) {
+            if(data[xAxisEntry][yAxisEntry]) {
+                result[yAxisEntry].push(data[xAxisEntry][yAxisEntry]);
+            } else {
+                result[yAxisEntry].push(0);
+            }
+        }
+    }
+
+    return {
+        headers: sortedLabels,
+        values: result,
+    };
+}
 
 class Axischart<T> {
     labelGenerator: (it: T) => string;
@@ -20,36 +54,6 @@ class Axischart<T> {
         this.labelGenerator = labelGenerator;
         this.axisGenerator = axisGenerator;
         this.configuration = configuration;
-    }
-
-    mapDataToChartInputType(data: NamedMap<NamedMap<number>>) {
-        let result: NamedMap<number[]> = {};
-        let yAxisEntries = new Set<string>();
-    
-        for(let xAxisEntry in data) {
-            for(let yAxisEntry in data[xAxisEntry]) {
-                yAxisEntries.add(yAxisEntry);
-    
-                if(!result[yAxisEntry]) {
-                    result[yAxisEntry] = [];
-                }
-            }
-        }
-    
-        for(let xAxisEntry in data) {
-            for(let yAxisEntry of yAxisEntries) {
-                if(data[xAxisEntry][yAxisEntry]) {
-                    result[yAxisEntry].push(data[xAxisEntry][yAxisEntry]);
-                } else {
-                    result[yAxisEntry].push(0);
-                }
-            }
-        }
-    
-        return {
-            headers: Object.keys(data),
-            values: result,
-        };
     }
 
     create(entities: T[]) {
@@ -69,18 +73,20 @@ class Axischart<T> {
     
             result[xAxis][yAxis] += 1;
         });
+
+        console.log('Result 1: ', result);
     
         const maxAllowedNumberOfEntries = this.configuration?.maxNumberOfEntries;
         if(maxAllowedNumberOfEntries) {
             const resultWithReducedXAxisEntries: typeof result = {};
             Object.keys(result).forEach((key, index) => {
-                if(index > 6) return;
+                if(index >= maxAllowedNumberOfEntries) return;
         
                 resultWithReducedXAxisEntries[key] = result[key];
             });
-        
+
             return {
-                data: this.mapDataToChartInputType(resultWithReducedXAxisEntries),
+                data: mapDataToChartInputType(resultWithReducedXAxisEntries, this.configuration?.labelSorter),
                 legend: this.configuration?.legend ?? true,
                 options: this.configuration?.options ?? true,
                 type: this.configuration?.type ?? 'bar'
@@ -88,7 +94,7 @@ class Axischart<T> {
         }
 
         return {
-            data: this.mapDataToChartInputType(result),
+            data: mapDataToChartInputType(result, this.configuration?.labelSorter),
             legend: this.configuration?.legend ?? true,
             options: this.configuration?.options ?? true,
             type: this.configuration?.type ?? 'bar'
@@ -106,13 +112,13 @@ const medicalAxischartClient = () => {
             return 'Aged under 35';
         } else if(clinicalCase.age <= 45) {
             return 'Aged 35 - 45';
-        } else if(clinicalCase.age < 55) {
+        } else if(clinicalCase.age <= 55) {
             return 'Aged 46 - 55';
-        } else if(clinicalCase.age < 65) {
+        } else if(clinicalCase.age <= 65) {
             return 'Aged 56 - 65';
         }
 
-        return 'Aged above 65';
+        return 'Aged at least 66';
     }
 
     const mapCholesterolLevelToGroup = (clinicalCase: MinimalHeartDiseaseData): string => {
@@ -129,48 +135,45 @@ const medicalAxischartClient = () => {
         mapActualAgeToAgeGroup,
         mapCholesterolLevelToGroup,
         {
-            maxNumberOfEntries: 6,
+            labelSorter: (l1: string , l2: string) => parseInt(l1.slice(-2)) - parseInt(l2.slice(-2)),
+            type: 'line',
         }
     );
 
     const result = CholesterolLevelsByAgeGroupBarchart.create(clinicalCases);
 
-    console.log('result: ', result);
+    const util = require('util');
+    console.log('result: ', util.inspect(result, false, 30));
 
     return result;
 }
 
-// medicalAxischartClient();
+medicalAxischartClient();
 
 module.exports = {
     Axischart,
     medicalAxischartClient,
 };
 
-// const barchartClient = () => {
-//     const { fetchMinimalCommitsData } = require('../data/dataProvider');
+const barchartClient = () => {
+    const { fetchMinimalCommitsData } = require('../data/dataProvider');
 
-//     const commits: MinimalComitsData[] = fetchMinimalCommitsData();
+    const commits: MinimalCommitsData[] = fetchMinimalCommitsData();
 
-//     const barchart = new Axischart<MinimalComitsData>(
-//         (commit: MinimalComitsData) => commit.date,
-//         (commit: MinimalComitsData) => commit.committerName,
-//         {
-//             maxNumberOfEntries: 6,
-//         }
-//     );
+    const barchart = new Axischart<MinimalCommitsData>(
+        (commit: MinimalCommitsData) => commit.date,
+        (commit: MinimalCommitsData) => commit.committerName,
+        {
+            maxNumberOfEntries: 6,
+        }
+    );
 
-//     const result = barchart.create(commits);
+    const result = barchart.create(commits);
 
-//     const util = require('util');
-//     console.log('Barchart client: ', util.inspect({
-//         data: result,
-//         legend: true,
-//         options: true,
-//         type: 'bar',
-//     }, false, 30));
+    const util = require('util');
+    console.log('result: ', util.inspect(result, false, 30));
 
-//     return result;
-// };
+    return result;
+};
 
 // barchartClient();

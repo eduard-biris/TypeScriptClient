@@ -98,9 +98,9 @@
 // };
 
 
-import type { MinimalComitsData } from "../types/types";
+import type { MinimalCommitsData } from "../types/types";
 
-const groupCommitsByDate = (commits: MinimalComitsData[]) => {
+const groupCommitsByDate = (commits: MinimalCommitsData[]) => {
     const groupedCommits = {};
 
     commits.forEach((commitData) => {
